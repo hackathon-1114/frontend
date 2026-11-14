@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=13">
+<link rel="stylesheet" href="/app.css?v=14">
 <style>
   .goals { list-style: none; padding: 0; margin: 10px 0 0; }
   .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
@@ -85,10 +85,8 @@
       <h1>당신의 신체에서<br>확인하면 좋을 영역이 있어요</h1>
       <p class="sub">인바디와 생활 습관 문진을 종합한 사전 분석입니다. 결론이 아니라 카메라로 확인할 항목입니다.</p>
     </div>
-    <div class="sheet" id="alertSheet">
-      <div id="alertView"></div>
-      <div class="msg" id="alertMsg"></div>
-    </div>
+    <div id="alertView"></div>
+    <div class="msg" id="alertMsg" style="padding: 0 20px"></div>
     <div class="next"><a class="btn" href="/pose-test.html">카메라로 확인하기</a></div>
   </div>
 
@@ -225,10 +223,48 @@ function showInbody(r) {
   if (r.source === 'sample') view.append(el('p', '시연을 위한 가상 데이터입니다.', 'note'));
 }
 
+// 확인할 영역을 몸 그림 위에 점으로 찍는다. 인바디 막대와 같이 거울처럼 왼쪽을 그림의 왼쪽에 둔다
+const TONES = { '추가 확인 권장': ['', '#C6FF3A'], '측정 필요': ['yellow', '#FFC24B'], '참고': ['grey', '#8E998F'] };
+const SPOTS = {
+  '어깨': [[39, 47, 10, 6.5], [81, 47, 10, 6.5]], '허리': [[60, 92, 19, 8]], '골반': [[60, 114, 21, 9]],
+  '고관절': [[49, 127, 7.5, 7.5], [71, 127, 7.5, 7.5]], '무릎': [[49.5, 166, 8.5, 8.5], [70.5, 166, 8.5, 8.5]],
+  '발목': [[49.5, 201, 6.5, 6.5], [70.5, 201, 6.5, 6.5]], '전신': [[60, 80, 26, 44]],
+};
+function bodyMap(areas) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const node = (tag, attrs) => { const n = document.createElementNS(NS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); return n; };
+  const fig = node('svg', { viewBox: '0 0 120 216', role: 'img' });
+  fig.setAttribute('aria-label', '확인할 부위: ' + areas.map(x => x.side + ' ' + x.bodyPart).join(', '));
+  const base = '#262D27';
+  fig.append(node('circle', { cx: 60, cy: 22, r: 13, fill: base }), node('rect', { x: 38, y: 40, width: 44, height: 68, rx: 11, fill: base }),
+    node('rect', { x: 23, y: 44, width: 11.5, height: 64, rx: 5.7, fill: base }), node('rect', { x: 85.5, y: 44, width: 11.5, height: 64, rx: 5.7, fill: base }),
+    node('rect', { x: 40, y: 103, width: 40, height: 24, rx: 10, fill: base }),
+    node('rect', { x: 42, y: 124, width: 15, height: 84, rx: 7.5, fill: base }), node('rect', { x: 63, y: 124, width: 15, height: 84, rx: 7.5, fill: base }));
+  areas.slice().reverse().forEach(area => {
+    const color = (TONES[area.status] || TONES['참고'])[1];
+    (SPOTS[area.bodyPart] || []).filter(([cx], i, all) => all.length === 1 || area.side === '양쪽' || (area.side === '왼쪽') === (cx < 60))
+      .forEach(([cx, cy, rx, ry]) => {
+        fig.append(node('ellipse', { cx, cy, rx: rx + 4, ry: ry + 4, fill: color, opacity: .18 }), node('ellipse', { cx, cy, rx, ry, fill: color, opacity: .9 }));
+      });
+  });
+  return fig;
+}
+
 function showAlert(a) {
-  const colors = { '추가 확인 권장': 'red', '측정 필요': 'yellow', '참고': 'blue' };
-  $('alertView').replaceChildren(...a.areas.map(area => {
-    return finding(colors[area.status] || 'blue', area.title, area.side + ' ' + area.bodyPart + ', ' + area.status, [], area.checkPatterns, area.reason);
+  const tone = area => (TONES[area.status] || TONES['참고'])[0];
+  const map = el('div', null, 'sheet bodymap');
+  const legend = el('div', null, 'legend');
+  a.areas.forEach(area => { const item = el('span'); const dot = el('i'); dot.className = tone(area); item.append(dot, document.createTextNode(area.title)); legend.append(item); });
+  map.append(bodyMap(a.areas), legend);
+  $('alertView').replaceChildren(map, ...a.areas.map(area => {
+    const card = el('div', null, 'sheet area');
+    card.append(el('span', area.status, 'tag ' + tone(area)), el('h2', area.title), el('p', area.reason, 'sub'));
+    if (area.checkPatterns && area.checkPatterns.length) {
+      const list = el('ul', null, 'checks');
+      area.checkPatterns.forEach(text => list.append(el('li', text)));
+      card.append(el('h3', '확인하면 좋은 패턴'), list);
+    }
+    return card;
   }));
 }
 
@@ -240,7 +276,7 @@ function loadBody(data) {
   $('situation').value = (s && s.discomforts[0] && s.discomforts[0].situation) || '';
   $('weekly').value = (s && s.weeklyWorkouts) ?? ''; $('goalText').value = (s && s.goal) || '';
   if (data.bodyAlert) showAlert(data.bodyAlert);
-  else $('alertView').replaceChildren(el('p', '문진을 마치면 확인할 영역을 골라 드립니다.', 'sub'));
+  else { const empty = el('div', null, 'sheet'); empty.append(el('p', '문진을 마치면 확인할 영역을 골라 드립니다.', 'sub')); $('alertView').replaceChildren(empty); }
 }
 
 $('sampleInbody').addEventListener('click', async () => {

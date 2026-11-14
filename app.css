@@ -196,3 +196,17 @@ td:first-child, th:first-child, td:last-child, th:last-child { text-align: left;
 /* 세로로 찍은 화면도 횟수와 안내 문구가 함께 보이게 영상 높이를 화면의 절반쯤으로 묶는다. 관절 선은 영상과 같은 비율로 맞춘다 */
 .stage video { max-height: 52vh; object-fit: contain; }
 .stage canvas { object-fit: contain; }
+
+/* 확인할 영역: 몸 그림과 영역별 카드 */
+.bodymap svg { display: block; width: 44%; max-width: 180px; margin: 4px auto 0; }
+.bodymap .legend { justify-content: center; margin-top: 16px; }
+.legend i.yellow { background: var(--yellow); }
+.legend i.grey { background: #8E998F; }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; margin-bottom: 10px; background: var(--blue-soft); color: var(--blue); }
+.tag.yellow { background: rgba(255, 194, 75, .14); color: var(--yellow); }
+.tag.grey { background: var(--tile); color: var(--sub); }
+.area .sub { margin-top: 6px; }
+.area h3 { color: var(--ink); margin: 18px 0 8px; }
+.checks { list-style: none; margin: 0; padding: 0; font-size: 14px; color: #D5DBD3; }
+.checks li { position: relative; padding: 3px 0 3px 16px; }
+.checks li::before { content: ''; position: absolute; left: 0; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
