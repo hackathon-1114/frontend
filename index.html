@@ -2,24 +2,22 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
+<meta name="theme-color" content="#0A0D08">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MUSCLE MAP</title>
+<title>MOTIF</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=4">
+<link rel="stylesheet" href="/app.css?v=10">
 <style>
-  details { margin-top: 6px; }
-  details summary { font-size: 13px; color: var(--sub); cursor: pointer; }
-  details p { font-size: 14px; }
   .goals { list-style: none; padding: 0; margin: 10px 0 0; }
   .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
-  .goals li::before { content: ''; position: absolute; left: 2px; top: 14px; width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 3px; }
+  .goals li::before { content: ''; position: absolute; left: 2px; top: 14px; width: 14px; height: 14px; border: 1.5px solid #5E685F; border-radius: 5px; }
   .goals li:first-child { border-top: 0; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <span class="brand">MUSCLE MAP</span>
+    <span class="brand">MOTIF</span>
     <select id="user" aria-label="사용자">
       <option value="example">예시 사용자</option>
       <option value="new">새 사용자</option>
@@ -38,12 +36,12 @@
       <a class="btn" href="/pose-test.html">새 세트 측정하기</a>
     </div>
     <div class="sheet" id="homeHistory" hidden>
-      <h2>최근 세트를 나란히 보면</h2>
-      <p class="sub">막대가 낮을수록 덜 앉은 것입니다.</p>
+      <h2>최근 세트 비교</h2>
+      <p class="sub">선이 내려갈수록 덜 앉은 것입니다.</p>
       <div class="multiples" id="multiples"></div>
     </div>
     <div class="sheet">
-      <h2>기록에서 찾은 패턴</h2>
+      <h2>패턴 분석</h2>
       <div id="insights"></div>
       <button class="btn quiet" id="analyze" type="button">패턴 다시 찾기</button>
       <div class="msg" id="patternMsg"></div>
@@ -53,14 +51,14 @@
   <!-- 내 몸: 인바디, 문진, 확인할 영역 -->
   <div class="screen" id="body">
     <div class="sheet">
-      <h1>몸의 구성</h1>
+      <h1>인바디</h1>
       <p class="sub">인바디는 근육이 어디에 얼마나 있는지를 알려 줍니다. 자세는 카메라로 따로 봅니다.</p>
       <div id="inbodyView"></div>
       <button class="btn quiet" id="sampleInbody" type="button">가상 인바디 데이터 넣기</button>
       <div class="msg" id="inbodyMsg"></div>
     </div>
     <div class="sheet">
-      <h1>평소 몸을 쓰는 습관</h1>
+      <h1>생활 습관</h1>
       <h3>하루에 앉아 있는 시간</h3>
       <div class="chips" id="sitting" data-single>
         <button type="button">2시간 미만</button><button type="button">2~4시간</button>
@@ -87,7 +85,7 @@
       <div class="msg" id="surveyMsg"></div>
     </div>
     <div class="sheet" id="alertSheet">
-      <h1>카메라로 확인하면 좋을 영역</h1>
+      <h1>확인할 영역</h1>
       <p class="sub">인바디와 습관을 함께 본 사전 분석입니다. 아직 움직임을 재지 않았으므로 결론이 아니라 확인할 항목입니다.</p>
       <div id="alertView"></div>
       <div class="msg" id="alertMsg"></div>
@@ -105,16 +103,16 @@
       <p class="note" id="resultNote"></p>
     </div>
     <div class="sheet" id="analysisSheet" hidden>
-      <h2>이번 세트에서 보인 것</h2>
+      <h2>세트 분석</h2>
       <div id="observations"></div>
       <div class="msg" id="resultMsg"></div>
     </div>
     <div class="sheet" id="exerciseSheet" hidden>
-      <h2>이렇게 보완해 보세요</h2>
+      <h2>보완 운동</h2>
       <div id="exercises"></div>
     </div>
     <div class="sheet" id="goalSheet" hidden>
-      <h2>다음 측정에서 확인할 것</h2>
+      <h2>다음 측정 목표</h2>
       <ul class="goals" id="goals"></ul>
       <a class="btn" href="/pose-test.html">다시 측정하기</a>
     </div>
@@ -122,13 +120,13 @@
 </div>
 
 <nav class="tabs" aria-label="화면 이동"><div>
-  <a href="#home" data-tab="home">홈</a>
-  <a href="#body" data-tab="body">내 몸</a>
-  <a href="/pose-test.html">측정</a>
-  <a href="#result" data-tab="result">결과</a>
+  <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>홈</a>
+  <a href="#body" data-tab="body"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.3"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>내 몸</a>
+  <a href="/pose-test.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2.5"/><path d="M15 11l5-3v8l-5-3z"/></svg>측정</a>
+  <a href="#result" data-tab="result"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M5 15l4-4 3 3 6-7"/></svg>결과</a>
 </div></nav>
 
-<script src="/app.js?v=4"></script>
+<script src="/app.js?v=9"></script>
 <script>
 const { $, api, el, finding, repChart, when } = MM;
 
@@ -141,10 +139,8 @@ document.querySelectorAll('.chips').forEach(group => group.addEventListener('cli
 const picked = id => [...$(id).querySelectorAll('button.on')].map(b => b.textContent);
 const pick = (id, values) => $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', values.includes(b.textContent)));
 
-function headline(stats) {
-  if (stats.fadeFromRep) return stats.fadeFromRep + '회째부터 덜 앉기 시작했습니다';
-  return stats.repCount + '회 모두 같은 깊이로 앉았습니다';
-}
+// 제목은 화면 이름만 적는다. 몇 회째부터 달라졌는지는 그 아래 한 줄과 그래프가 보여 준다
+const fadeNote = stats => stats.fadeFromRep ? stats.fadeFromRep + '회째부터 덜 앉음' : '끝까지 같은 깊이';
 
 // ── 홈 ────────────────────────────────────────────────────────────────────────────
 function showInsights(items) {
@@ -152,11 +148,7 @@ function showInsights(items) {
   box.replaceChildren();
   if (!items.length) { box.append(el('p', '세트가 쌓이면 여기에서 반복되는 패턴을 찾아 드립니다.', 'sub')); return; }
   items.forEach(p => {
-    const row = finding('blue', p.title, null, [p.suggestion]);
-    const more = el('details');
-    more.append(el('summary', '근거 보기'), el('p', p.evidence));
-    row.lastChild.append(more);
-    box.append(row);
+    box.append(finding('blue', p.title, null, [p.suggestion], null, p.evidence));
   });
 }
 
@@ -170,8 +162,8 @@ function loadHome(data) {
     $('homeChart').replaceChildren();
   } else {
     const latest = sets[0];
-    $('homeHeadline').textContent = headline(latest.stats);
-    $('homeSub').textContent = when(latest.performedAt) + ' ' + latest.exercise + ' ' + latest.stats.repCount + '회';
+    $('homeHeadline').textContent = '최근 운동 측정 결과';
+    $('homeSub').textContent = when(latest.performedAt) + ' ' + latest.exercise + ' ' + latest.stats.repCount + '회, ' + fadeNote(latest.stats);
     $('homeChart').replaceChildren(repChart(latest.reps, latest.stats.fadeFromRep));
     const recent = sets.slice(0, 3).reverse();
     const top = MM.topOf(recent.flatMap(s => s.reps));
@@ -228,11 +220,7 @@ function showInbody(r) {
 function showAlert(a) {
   const colors = { '추가 확인 권장': 'red', '측정 필요': 'yellow', '참고': 'blue' };
   $('alertView').replaceChildren(...a.areas.map(area => {
-    const row = finding(colors[area.status] || 'blue', area.title, area.side + ' ' + area.bodyPart + ', ' + area.status, [], area.checkPatterns);
-    const more = el('details');
-    more.append(el('summary', '왜 이 영역인가요'), el('p', area.reason));
-    row.lastChild.append(more);
-    return row;
+    return finding(colors[area.status] || 'blue', area.title, area.side + ' ' + area.bodyPart + ', ' + area.status, [], area.checkPatterns, area.reason);
   }));
 }
 
@@ -279,7 +267,7 @@ function showSet(set) {
   const st = set.stats, f = set.feedback;
   const kept = st.fadeFromRep ? st.fadeFromRep - 1 : st.repCount;
   $('resultWhen').textContent = when(set.performedAt) + ' ' + set.exercise + ' ' + st.repCount + '회';
-  $('resultHeadline').textContent = (f && f.headline) || headline(st);
+  $('resultHeadline').textContent = '측정 결과';
   const ringRow = el('div', null, 'ringrow');
   const ringText = el('div');
   ringText.append(el('strong', '처음 깊이를 지킨 반복'), el('div', kept === st.repCount ? '끝까지 같은 깊이로 앉았습니다.' : (kept + 1) + '회째부터 덜 앉거나 느려졌습니다.', 'sub'));
@@ -291,7 +279,7 @@ function showSet(set) {
     figure('후반 앉은 깊이', signed(-Math.round(st.depthChange * 100)), '%p'),
     figure('후반 한 회 시간', signed(Math.round(st.tempoChangePct)), '%'),
     figure('후반 상체 기울기', signed(Math.round(st.leanChange)), '도'));
-  $('resultNote').textContent = '막대는 한 번 앉을 때 엉덩이가 내려간 깊이입니다. 높을수록 깊이 앉은 것이고, 수치는 세트 앞부분과 뒷부분의 차이입니다.'
+  $('resultNote').textContent = '선은 한 번 앉을 때 엉덩이가 내려간 깊이입니다. 높을수록 깊이 앉은 것이고, 아래 수치는 세트 앞부분과 뒷부분의 차이입니다.'
     + (set.emg && set.emg.simulated ? ' 근육 활성 값은 센서가 없어 시뮬레이션이며 판단에 쓰지 않았습니다.' : '');
 
   $('analysisSheet').hidden = false;
@@ -315,20 +303,12 @@ function showSet(set) {
   }
   obs.append(el('p', f.summary));
   f.observations.forEach(o => {
-    const row = finding(o.possibleLoad ? 'red' : '', o.title, null, [o.possibleLoad]);
-    const more = el('details');
-    more.append(el('summary', '근거 보기'), el('p', o.evidence));
-    row.lastChild.append(more);
-    obs.append(row);
+    obs.append(finding(o.possibleLoad ? 'red' : '', o.title, null, [o.possibleLoad], null, o.evidence));
   });
   const exercises = f.exercises || [], goals = f.retestGoals || [];
   $('exerciseSheet').hidden = !exercises.length;
   $('exercises').replaceChildren(...exercises.map(x => {
-    const row = finding('blue', x.name, null, [x.how]);
-    const more = el('details');
-    more.append(el('summary', '왜 이 운동인가요'), el('p', x.reason));
-    row.lastChild.append(more);
-    return row;
+    return finding('blue', x.name, null, [x.how], null, x.reason);
   }));
   $('goalSheet').hidden = !goals.length;
   $('goals').replaceChildren(...goals.map(g => el('li', g)));

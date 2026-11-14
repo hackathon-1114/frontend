@@ -1,6 +1,6 @@
 # Frontend
 
-MUSCLE MAP의 화면. 카메라로 스쿼트를 추적하고, 반복이 쌓일 때 깊이와 속도가 어떻게 달라지는지 보여 준다. 백엔드 저장소는 [hackathon-1114/backend](https://github.com/hackathon-1114/backend).
+MOTIF의 화면. 카메라로 스쿼트를 추적하고, 반복이 쌓일 때 깊이와 속도가 어떻게 달라지는지 보여 준다. 백엔드 저장소는 [hackathon-1114/backend](https://github.com/hackathon-1114/backend).
 
 ## 먼저 읽을 것
 
