@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF 측정</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=10">
+<link rel="stylesheet" href="/app.css?v=12">
 <style>
   .voice { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--sub); }
   .how { margin: 10px 0 0; padding-left: 18px; font-size: 14px; }
@@ -21,6 +21,12 @@
   <div class="top">
     <span class="brand">MOTIF</span>
     <label class="voice"><input id="voice" type="checkbox" checked> 음성 안내</label>
+  </div>
+
+  <div class="step"><span>BODY MOTION</span><em>4 / 5</em><i style="--p:80%"></i></div>
+  <div class="lead">
+    <h1>움직임을 확인해 볼게요</h1>
+    <p class="sub">스쿼트 한 세트를 하면 반복마다 앉는 깊이와 속도를 잽니다.</p>
   </div>
 
   <div class="stage" id="stage"><video id="video" playsinline muted></video><canvas id="overlay"></canvas></div>
@@ -46,7 +52,7 @@
     <h2 id="saveHeadline"></h2>
     <p class="sub" id="saveSub"></p>
     <button class="btn" id="save" type="button">이 세트 저장하기</button>
-    <a class="btn quiet" id="toResult" href="/#result" hidden>결과 자세히 보기</a>
+    <a class="btn" id="toResult" href="/#result" hidden>다음으로</a>
     <div class="msg" id="saveMsg"></div>
   </div>
 
@@ -69,10 +75,11 @@
   </div>
 </div>
 
-<nav class="tabs" aria-label="화면 이동"><div>
-  <a href="/#home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>홈</a>
-  <a href="/#body"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.3"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>내 몸</a>
-  <a href="/pose-test.html" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2.5"/><path d="M15 11l5-3v8l-5-3z"/></svg>측정</a>
+<nav class="tabs" aria-label="단계 이동"><div>
+  <a href="/#profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.3"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>인바디</a>
+  <a href="/#check"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2.5"/><path d="M9 5V3.5h6V5"/><path d="M9 11h6M9 15h4"/></svg>문진</a>
+  <a href="/#alert"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 15.5H3z"/><path d="M12 10v4.5M12 17.2v.1"/></svg>확인 영역</a>
+  <a href="/pose-test.html" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2.5"/><path d="M15 11l5-3v8l-5-3z"/></svg>카메라</a>
   <a href="/#result"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M5 15l4-4 3 3 6-7"/></svg>결과</a>
 </div></nav>
 

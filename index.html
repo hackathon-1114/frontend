@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=10">
+<link rel="stylesheet" href="/app.css?v=12">
 <style>
   .goals { list-style: none; padding: 0; margin: 10px 0 0; }
   .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
@@ -24,41 +24,31 @@
     </select>
   </div>
 
-  <!-- 홈: 쌓인 세트에서 보이는 것 -->
-  <div class="screen" id="home">
-    <div class="sheet">
-      <h1 id="homeHeadline">불러오는 중입니다</h1>
-      <p class="sub" id="homeSub"></p>
-      <div id="homeChart"></div>
-      <div class="legend" id="homeLegend" hidden>
-        <span><i></i>처음 깊이를 지킨 반복</span><span><i class="red"></i>덜 앉거나 느려진 반복</span>
-      </div>
-      <a class="btn" href="/pose-test.html">새 세트 측정하기</a>
-    </div>
-    <div class="sheet" id="homeHistory" hidden>
-      <h2>최근 세트 비교</h2>
-      <p class="sub">선이 내려갈수록 덜 앉은 것입니다.</p>
-      <div class="multiples" id="multiples"></div>
-    </div>
-    <div class="sheet">
-      <h2>패턴 분석</h2>
-      <div id="insights"></div>
-      <button class="btn quiet" id="analyze" type="button">패턴 다시 찾기</button>
-      <div class="msg" id="patternMsg"></div>
-    </div>
-  </div>
+  <div class="msg" id="netMsg" style="padding: 0 20px"></div>
 
-  <!-- 내 몸: 인바디, 문진, 확인할 영역 -->
-  <div class="screen" id="body">
+  <!-- 1단계: 인바디 -->
+  <div class="screen" id="profile">
+    <div class="step"><span>BODY PROFILE</span><em>1 / 5</em><i style="--p:20%"></i></div>
+    <div class="lead">
+      <h1>나의 신체 데이터를<br>확인해 볼까요?</h1>
+      <p class="sub">인바디는 근육이 어디에 얼마나 있는지를 알려 줍니다.</p>
+    </div>
     <div class="sheet">
-      <h1>인바디</h1>
-      <p class="sub">인바디는 근육이 어디에 얼마나 있는지를 알려 줍니다. 자세는 카메라로 따로 봅니다.</p>
       <div id="inbodyView"></div>
       <button class="btn quiet" id="sampleInbody" type="button">가상 인바디 데이터 넣기</button>
       <div class="msg" id="inbodyMsg"></div>
     </div>
+    <div class="next"><a class="btn" href="#check">다음으로</a></div>
+  </div>
+
+  <!-- 2단계: 문진 -->
+  <div class="screen" id="check">
+    <div class="step"><span>BODY CHECK</span><em>2 / 5</em><i style="--p:40%"></i></div>
+    <div class="lead">
+      <h1>평소 몸을 어떻게<br>사용하시나요?</h1>
+      <p class="sub">몇 가지 질문으로 몸을 쓰는 습관을 알아봅니다.</p>
+    </div>
     <div class="sheet">
-      <h1>생활 습관</h1>
       <h3>하루에 앉아 있는 시간</h3>
       <div class="chips" id="sitting" data-single>
         <button type="button">2시간 미만</button><button type="button">2~4시간</button>
@@ -81,24 +71,39 @@
         <div><label for="weekly">주당 운동 횟수</label><input id="weekly" type="number" min="0" max="21" placeholder="3"></div>
         <div><label for="goalText">운동 목표</label><input id="goalText" type="text" maxlength="100" placeholder="하체 근력 강화"></div>
       </div>
-      <button class="btn" id="saveSurvey" type="button">저장하고 확인할 영역 보기</button>
-      <div class="msg" id="surveyMsg"></div>
     </div>
-    <div class="sheet" id="alertSheet">
-      <h1>확인할 영역</h1>
-      <p class="sub">인바디와 습관을 함께 본 사전 분석입니다. 아직 움직임을 재지 않았으므로 결론이 아니라 확인할 항목입니다.</p>
-      <div id="alertView"></div>
-      <div class="msg" id="alertMsg"></div>
-      <a class="btn" href="/pose-test.html">카메라로 확인하기</a>
+    <div class="next">
+      <button class="btn" id="saveSurvey" type="button">다음으로</button>
+      <div class="msg" id="surveyMsg"></div>
     </div>
   </div>
 
-  <!-- 결과: 가장 최근 세트 -->
+  <!-- 3단계: 확인할 영역 -->
+  <div class="screen" id="alert">
+    <div class="step"><span>BODY ALERT</span><em>3 / 5</em><i style="--p:60%"></i></div>
+    <div class="lead">
+      <h1>당신의 신체에서<br>확인하면 좋을 영역이 있어요</h1>
+      <p class="sub">인바디와 생활 습관 문진을 종합한 사전 분석입니다. 결론이 아니라 카메라로 확인할 항목입니다.</p>
+    </div>
+    <div class="sheet" id="alertSheet">
+      <div id="alertView"></div>
+      <div class="msg" id="alertMsg"></div>
+    </div>
+    <div class="next"><a class="btn" href="/pose-test.html">카메라로 확인하기</a></div>
+  </div>
+
+  <!-- 5단계: 결과와 개선 방향 -->
   <div class="screen" id="result">
-    <div class="sheet">
-      <p class="sub" id="resultWhen"></p>
+    <div class="step"><span>BODY REPORT</span><em>5 / 5</em><i style="--p:100%"></i></div>
+    <div class="lead">
       <h1 id="resultHeadline">불러오는 중입니다</h1>
+      <p class="sub" id="resultWhen"></p>
+    </div>
+    <div class="sheet">
       <div id="resultChart"></div>
+      <div class="legend" id="resultLegend" hidden>
+        <span><i></i>처음 깊이를 지킨 반복</span><span><i class="red"></i>덜 앉거나 느려진 반복</span>
+      </div>
       <div class="figures" id="resultFigures"></div>
       <p class="note" id="resultNote"></p>
     </div>
@@ -114,15 +119,27 @@
     <div class="sheet" id="goalSheet" hidden>
       <h2>다음 측정 목표</h2>
       <ul class="goals" id="goals"></ul>
-      <a class="btn" href="/pose-test.html">다시 측정하기</a>
     </div>
+    <div class="sheet" id="homeHistory" hidden>
+      <h2>최근 세트 비교</h2>
+      <p class="sub">선이 내려갈수록 덜 앉은 것입니다.</p>
+      <div class="multiples" id="multiples"></div>
+    </div>
+    <div class="sheet">
+      <h2>패턴 분석</h2>
+      <div id="insights"></div>
+      <button class="btn quiet" id="analyze" type="button">패턴 다시 찾기</button>
+      <div class="msg" id="patternMsg"></div>
+    </div>
+    <div class="next"><a class="btn" href="/pose-test.html">다시 측정하기</a></div>
   </div>
 </div>
 
-<nav class="tabs" aria-label="화면 이동"><div>
-  <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>홈</a>
-  <a href="#body" data-tab="body"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.3"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>내 몸</a>
-  <a href="/pose-test.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2.5"/><path d="M15 11l5-3v8l-5-3z"/></svg>측정</a>
+<nav class="tabs" aria-label="단계 이동"><div>
+  <a href="#profile" data-tab="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="3.3"/><path d="M5.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/></svg>인바디</a>
+  <a href="#check" data-tab="check"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="16" rx="2.5"/><path d="M9 5V3.5h6V5"/><path d="M9 11h6M9 15h4"/></svg>문진</a>
+  <a href="#alert" data-tab="alert"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 15.5H3z"/><path d="M12 10v4.5M12 17.2v.1"/></svg>확인 영역</a>
+  <a href="/pose-test.html"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="12" height="10" rx="2.5"/><path d="M15 11l5-3v8l-5-3z"/></svg>카메라</a>
   <a href="#result" data-tab="result"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M5 15l4-4 3 3 6-7"/></svg>결과</a>
 </div></nav>
 
@@ -152,19 +169,10 @@ function showInsights(items) {
   });
 }
 
-function loadHome(data) {
+function loadHistory(data) {
   const sets = data.sets;
-  $('homeLegend').hidden = !sets.length;
   $('homeHistory').hidden = sets.length < 2;
-  if (!sets.length) {
-    $('homeHeadline').textContent = '첫 세트를 측정해 보세요';
-    $('homeSub').textContent = '카메라 앞에서 스쿼트를 하면 반복이 쌓일 때 깊이와 속도가 어떻게 달라지는지 보여 드립니다.';
-    $('homeChart').replaceChildren();
-  } else {
-    const latest = sets[0];
-    $('homeHeadline').textContent = '최근 운동 측정 결과';
-    $('homeSub').textContent = when(latest.performedAt) + ' ' + latest.exercise + ' ' + latest.stats.repCount + '회, ' + fadeNote(latest.stats);
-    $('homeChart').replaceChildren(repChart(latest.reps, latest.stats.fadeFromRep));
+  if (sets.length >= 2) {
     const recent = sets.slice(0, 3).reverse();
     const top = MM.topOf(recent.flatMap(s => s.reps));
     $('multiples').replaceChildren(...recent.map(s => {
@@ -232,7 +240,7 @@ function loadBody(data) {
   $('situation').value = (s && s.discomforts[0] && s.discomforts[0].situation) || '';
   $('weekly').value = (s && s.weeklyWorkouts) ?? ''; $('goalText').value = (s && s.goal) || '';
   if (data.bodyAlert) showAlert(data.bodyAlert);
-  else $('alertView').replaceChildren(el('p', '습관을 저장하면 확인할 영역을 골라 드립니다.', 'sub'));
+  else $('alertView').replaceChildren(el('p', '문진을 마치면 확인할 영역을 골라 드립니다.', 'sub'));
 }
 
 $('sampleInbody').addEventListener('click', async () => {
@@ -249,10 +257,10 @@ $('saveSurvey').addEventListener('click', async () => {
       bodyHabits: picked('habits').filter(h => h !== '해당 없음'),
       discomforts: picked('parts').map(bodyPart => ({ bodyPart, situation })),
     });
-    $('surveyMsg').textContent = '저장했습니다. 확인할 영역을 고르는 중입니다. 10초쯤 걸립니다.';
+    $('surveyMsg').textContent = '확인할 영역을 고르는 중입니다. 10초쯤 걸립니다.';
     state.bodyAlert = await api('POST', '/api/body-alerts/analyze'); MM.keepOverview(state); showAlert(state.bodyAlert);
     $('surveyMsg').textContent = '';
-    $('alertSheet').scrollIntoView({ behavior: 'smooth' });
+    location.hash = '#alert';
   } catch (e) { $('surveyMsg').textContent = e.message; }
   finally { $('saveSurvey').disabled = false; }
 });
@@ -266,8 +274,8 @@ const signed = v => (v > 0 ? '+' : '') + v;
 function showSet(set) {
   const st = set.stats, f = set.feedback;
   const kept = st.fadeFromRep ? st.fadeFromRep - 1 : st.repCount;
-  $('resultWhen').textContent = when(set.performedAt) + ' ' + set.exercise + ' ' + st.repCount + '회';
-  $('resultHeadline').textContent = '측정 결과';
+  $('resultWhen').textContent = when(set.performedAt) + ' ' + set.exercise + ' ' + st.repCount + '회, ' + fadeNote(st);
+  $('resultHeadline').textContent = '측정 결과와 개선 방향';
   const ringRow = el('div', null, 'ringrow');
   const ringText = el('div');
   ringText.append(el('strong', '처음 깊이를 지킨 반복'), el('div', kept === st.repCount ? '끝까지 같은 깊이로 앉았습니다.' : (kept + 1) + '회째부터 덜 앉거나 느려졌습니다.', 'sub'));
@@ -316,19 +324,21 @@ function showSet(set) {
 
 function loadResult(data) {
   $('resultMsg').textContent = '';
+  $('resultLegend').hidden = !data.sets.length;
+  loadHistory(data);
   if (data.sets.length) { showSet(data.sets[0]); return; }
   $('resultWhen').textContent = '';
   $('resultHeadline').textContent = '아직 측정한 세트가 없습니다';
   $('resultChart').replaceChildren(); $('resultFigures').replaceChildren();
-  $('resultNote').textContent = '아래 측정에서 스쿼트 한 세트를 저장하면 여기에 결과가 나옵니다.';
+  $('resultNote').textContent = '카메라 단계에서 스쿼트 한 세트를 저장하면 여기에 결과가 나옵니다.';
   ['analysisSheet', 'exerciseSheet', 'goalSheet'].forEach(id => { $(id).hidden = true; });
 }
 
 // ── 화면 전환 ─────────────────────────────────────────────────────────────────────
 // 지난번에 받은 내용으로 먼저 그리고, 서버에서 새로 받으면 다시 그린다. 화면을 바꿀 때는 서버를 다시 부르지 않는다
-const loaders = { home: loadHome, body: loadBody, result: loadResult };
+const loaders = { profile: loadBody, check: loadBody, alert: loadBody, result: loadResult };
 let state = MM.cachedOverview();
-const currentTab = () => loaders[location.hash.slice(1)] ? location.hash.slice(1) : 'home';
+const currentTab = () => loaders[location.hash.slice(1)] ? location.hash.slice(1) : 'profile';
 function draw() { if (state) loaders[currentTab()](state); }
 function show() {
   const tab = currentTab();
@@ -339,7 +349,7 @@ function show() {
 }
 async function refresh() {
   try { state = await MM.overview(true); draw(); }
-  catch (e) { if (!state) $('homeHeadline').textContent = '불러오지 못했습니다. 연결을 확인하고 새로 고쳐 주세요.'; }
+  catch (e) { if (!state) $('netMsg').textContent = '불러오지 못했습니다. 연결을 확인하고 새로 고쳐 주세요.'; }
 }
 window.addEventListener('hashchange', show);
 $('user').value = MM.userKind();
