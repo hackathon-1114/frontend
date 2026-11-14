@@ -192,3 +192,7 @@ td:first-child, th:first-child, td:last-child, th:last-child { text-align: left;
 
 /* 판의 첫 줄에 오는 수치 묶음과 그래프는 위 여백을 두지 않는다 */
 .sheet > div:first-child > .figures:first-child, .sheet > div:first-child > .ringrow:first-child { margin-top: 0; }
+
+/* 세로로 찍은 화면도 횟수와 안내 문구가 함께 보이게 영상 높이를 화면의 절반쯤으로 묶는다. 관절 선은 영상과 같은 비율로 맞춘다 */
+.stage video { max-height: 52vh; object-fit: contain; }
+.stage canvas { object-fit: contain; }
