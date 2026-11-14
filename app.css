@@ -221,3 +221,70 @@ td:first-child, th:first-child, td:last-child, th:last-child { text-align: left;
 /* 세로로 찍은 화면도 횟수와 안내 문구가 함께 보이게 영상 높이를 화면의 절반쯤으로 묶는다. 관절 선은 영상과 같은 비율로 맞춘다 */
 .stage video { max-height: 52vh; object-fit: contain; }
 .stage canvas { object-fit: contain; }
+
+/* Figma: body profile and questionnaire */
+@font-face {
+  font-family: 'SuitVariable';
+  src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/2611030106@font-variable-845/variable-845/SUIT-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+.body-flow { padding: 18px 20px 24px; font-family: 'SuitVariable', sans-serif; color: #f3f6ec; }
+.body-flow .step { padding: 0; margin-bottom: 28px; gap: 10px; }
+.body-flow .step span { color: #c6ff3d; letter-spacing: 0; }
+.body-flow .step i { height: 4px; }
+.body-flow .lead { padding: 0; }
+.body-flow .lead h1 { font-size: 22px; line-height: 28px; letter-spacing: -.44px; }
+.body-flow .lead .sub { color: #9aa392; font-size: 12px; margin-top: 8px; }
+.body-flow .sheet { padding: 0; margin: 0; background: none; border: 0; border-radius: 0; }
+.body-flow .next { padding: 24px 0 0; }
+.body-flow .btn { min-height: 52px; padding: 15px; background: #c6ff3d; color: #0b0d0a; border-radius: 100px; font-weight: 700; }
+.upload-card { display: flex; align-items: center; gap: 18px; min-height: 100px; margin-top: 20px; padding: 14px 23px; background: #171b14; border: 1px dashed #8fcb1f; border-radius: 15px; }
+.upload-symbol { display: grid; place-items: center; flex: 0 0 52px; height: 52px; border-radius: 50%; background: #2e3a1a; color: #c6ff3d; font-size: 26px; }
+.upload-card strong { display: block; font-size: 14px; }
+.upload-card p { margin: 2px 0 6px; color: #9aa392; font-size: 12px; }
+.upload-unavailable { display: inline-block; padding: 4px 10px; background: #2e3a1a; border-radius: 100px; color: #9ca888; font-size: 11px; }
+.analysis-label { margin: 28px 0 18px; text-align: center; color: #c6ff3d; font-size: 11px; font-weight: 700; }
+.analysis-label span { display: block; font-size: 18px; line-height: 1; }
+.body-flow .figures { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.body-flow .figure { min-height: 90px; padding: 16px 18px; background: #37412f; border: 1.2px solid #2a3023; border-radius: 18px; }
+.body-flow .figure b { font-size: 27px; line-height: 1.25; }
+.body-flow .profile-results .btn.quiet { background: #2e3a1a; color: #c6ff3d; border: 0; font-size: 13px; }
+.survey-sheet { margin-top: 28px !important; }
+.survey-sheet h3 { margin: 28px 0 12px; color: #f3f6ec; font-size: 14px; font-weight: 700; }
+.survey-sheet h3 span { color: #c6ff3d; margin-right: 6px; }
+.survey-sheet .chips { gap: 12px; }
+.survey-sheet .chips button { min-height: 48px; background: #171b14; border: 1px solid #2a3023; color: #9aa392; border-radius: 12px; }
+.survey-sheet .chips button.on { border-color: #c6ff3d; background: #2e3a1a; color: #c6ff3d; }
+.survey-sheet .part-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.survey-sheet .part-options button { min-height: 36px; padding: 8px 18px; border-radius: 100px; }
+.survey-sheet .habit-options { grid-template-columns: 1fr; }
+.survey-sheet .habit-options button { text-align: left; padding-left: 18px; }
+.body-flow-active { background: #0b0d0a; }
+.body-flow { padding-top: 64px; padding-bottom: 180px; }
+.body-flow .step { margin-bottom: 26px; }
+.body-flow .step i { background: linear-gradient(90deg, #c6ff3d var(--p), #2a3023 var(--p)); }
+.body-flow .next { position: fixed; z-index: 3; bottom: 0; left: 50%; transform: translateX(-50%); width: min(100%, 560px); bottom: calc(57px + env(safe-area-inset-bottom)); padding: 36px 20px 10px; background: linear-gradient(transparent, #19240e 72%); }
+.upload-unavailable { cursor: pointer; color: #c6ff3d; font-weight: 700; }
+.body-status { margin-top: 24px; }
+.body-status h3 { margin: 0 0 8px; color: #f3f6ec; font-size: 15px; font-weight: 700; }
+.status-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.status-item { display: inline-flex; gap: 6px; align-items: center; padding: 8px 10px; background: #171b14; border-radius: 100px; color: #c6ff3d; font-size: 11px; font-weight: 700; }
+.status-item b { padding: 3px 6px; border-radius: 100px; background: #2e3a1a; color: #9ca888; }
+.survey-sheet { margin-top: 29px !important; }
+.survey-sheet h3 { margin-top: 36px; }
+.survey-sheet .chips button { font-size: 14px; font-weight: 700; }
+.survey-sheet #sitting { column-gap: 16px; }
+.survey-sheet #sitting button, .survey-sheet .habit-options button { display: flex; align-items: center; gap: 13px; padding: 0 18px; text-align: left; }
+.survey-sheet #sitting button::before, .survey-sheet .habit-options button::before { content: ''; flex: 0 0 18px; width: 18px; height: 18px; border: 1px solid #636b5b; }
+.survey-sheet #sitting button::before { border-radius: 50%; }
+.survey-sheet .habit-options button::before { border-radius: 4px; }
+.survey-sheet #sitting button.on::before { border: 5px solid #c6ff3d; background: #0b0d0a; }
+.survey-sheet .habit-options button.on::before { content: '✓'; display: grid; place-items: center; background: #c6ff3d; color: #0b0d0a; border-color: #c6ff3d; }
+.survey-sheet .part-options { gap: 10px; }
+.survey-sheet .part-options button.on::after { content: ' ✓'; }
+.survey-sheet .habit-options { gap: 10px; }
+.survey-sheet .habit-options button { min-height: 50px; }
+
+/* Keep navigation above the fixed action on every screen. */
+.tabs { z-index: 4; }
