@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MUSCLE MAP 측정</title>
-<link rel="stylesheet" href="/app.css">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="/app.css?v=4">
 <style>
   .voice { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--sub); }
   .how { margin: 10px 0 0; padding-left: 18px; font-size: 14px; }
@@ -59,7 +60,7 @@
     <details>
       <summary>회차별 수치 보기</summary>
       <table>
-        <thead><tr><th>회</th><th>방향</th><th>깊이</th><th>시간</th><th>상체</th><th>무릎 간격</th><th>관찰</th></tr></thead>
+        <thead><tr><th>회</th><th>방향</th><th>앉은 깊이</th><th>시간</th><th>상체</th><th>무릎 간격</th><th>관찰</th></tr></thead>
         <tbody id="reps"></tbody>
       </table>
     </details>
@@ -73,7 +74,7 @@
   <a href="/#result">결과</a>
 </div></nav>
 
-<script src="/app.js"></script>
+<script src="/app.js?v=4"></script>
 <script type="module">
 import { PoseLandmarker, FilesetResolver, DrawingUtils }
   from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs';
@@ -199,7 +200,7 @@ function addRep(rep) {
   reps.push(rep);
   $('count').textContent = reps.length;
   const tr = document.createElement('tr');
-  [reps.length, VIEW_NAMES[rep.view], Math.round(rep.depth * 100) + '%',
+  [reps.length, VIEW_NAMES[rep.view], MM.sat(rep.depth) + '%',
     (rep.durationMs / 1000).toFixed(1) + '초', Math.round(rep.maxLean) + '°',
     rep.kneeRatio == null ? '-' : rep.kneeRatio.toFixed(2), rep.findings.join(', ') || '없음']
     .forEach(v => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
@@ -277,7 +278,7 @@ function frame() {
         // 영상 파일은 영상 시각을, 카메라는 실제 시각을 쓴다. 빨리 감기로 시험해도 반복 시간이 맞게 나온다
         ratio = update(m, video.srcObject ? now : video.currentTime * 1000);
         const avg = times.reduce((s, v) => s + v, 0) / times.length;
-        $('live').textContent = VIEW_NAMES[m.view] + ' 촬영, 엉덩이 높이 ' + Math.round(ratio * 100) + '%';
+        $('live').textContent = VIEW_NAMES[m.view] + ' 촬영, 지금 앉은 깊이 ' + Math.max(0, MM.sat(ratio)) + '%';
         $('live').title = '프레임당 ' + avg.toFixed(1) + 'ms';
       }
     }
@@ -375,6 +376,8 @@ $('save').addEventListener('click', async () => {
     window.poseTest.saved = saved;
     const explained = await MM.api('POST', '/api/sets/' + saved.id + '/feedback');
     window.poseTest.saved = explained;
+    const known = MM.cachedOverview();   // 결과 화면이 서버를 기다리지 않고 바로 뜨도록 받아 둔 내용에 끼워 넣는다
+    if (known) { known.sets = [explained, ...known.sets.filter(x => x.id !== explained.id)]; MM.keepOverview(known); }
     $('saveHeadline').textContent = explained.feedback.headline || $('saveHeadline').textContent;
     $('saveSub').textContent = explained.feedback.summary;
     $('toResult').hidden = false;

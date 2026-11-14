@@ -8,7 +8,7 @@ const MM = (() => {
 
   // 예시 사용자는 1번(5주치 기록이 있음). 새 사용자는 이 기기에서만 쓰는 임의 번호를 받는다
   function userKind() { return store.get('mmUserKind') === 'new' ? 'new' : 'example'; }
-  function setUserKind(kind) { store.set('mmUserKind', kind); }
+  function setUserKind(kind) { store.set('mmUserKind', kind); overviewRequest = null; }
   function userId() {
     if (userKind() === 'example') return '1';
     let id = store.get('mmNewUser');
@@ -25,6 +25,17 @@ const MM = (() => {
     const data = await res.json();
     if (!res.ok) { const err = new Error(data.message || data.code); err.code = data.code; throw err; }
     return data.data;
+  }
+
+  // 화면에 필요한 것을 한 번에 받아 둔다. 서버가 멀어 호출 한 번이 0.6초쯤 걸리기 때문에,
+  // 지난번에 받은 것을 먼저 그리고(cachedOverview) 새로 받은 것으로 다시 그린다.
+  let overviewRequest = null;
+  const cacheKey = () => 'mmOverview:' + userId();
+  function cachedOverview() { try { return JSON.parse(store.get(cacheKey())); } catch (e) { return null; } }
+  function keepOverview(data) { store.set(cacheKey(), JSON.stringify(data)); overviewRequest = Promise.resolve(data); return data; }
+  function overview(fresh) {
+    if (fresh || !overviewRequest) overviewRequest = api('GET', '/api/overview').then(keepOverview);
+    return overviewRequest;
   }
 
   function el(tag, text, className) {
@@ -46,55 +57,64 @@ const MM = (() => {
   }
 
   const SVG = 'http://www.w3.org/2000/svg';
-  function svg(tag, attrs) {
+  function svg(tag, attrs, text) {
     const node = document.createElementNS(SVG, tag);
     Object.entries(attrs).forEach(([k, v]) => node.setAttribute(k, v));
+    if (text != null) node.textContent = text;
     return node;
   }
 
-  // 반복마다 얼마나 깊이 앉았는지를 위에서 아래로 내려오는 선으로 그린다.
-  // 선이 길수록 깊이 앉은 것이고, fadeFrom 회차부터는 빨강으로 바뀐다.
+  // 서버가 주는 depth는 엉덩이 높이 비율(서 있으면 1)이다. 화면에는 "앉은 깊이"(얼마나 내려갔나, %)로 보여 준다.
+  // 클수록 깊이 앉은 것이라 막대가 높을수록 잘 앉은 것으로 읽힌다.
+  const sat = depth => Math.round((1 - depth) * 100);
+
+  const BLUE = '#1D5BBF', RED = '#D63A2F', TRACK = '#EEF1F0', SUB = '#5E6664';
+
+  // 반복마다 앉은 깊이를 둥근 막대로 그린다. fadeFrom 회차부터는 빨강이고, 점선은 처음 두 번의 깊이다.
+  function topOf(reps) { return Math.max(30, ...reps.map(r => sat(r.depth))) * 1.18; }
   function repChart(reps, fadeFrom, opts = {}) {
     const compact = !!opts.compact;
-    const n = Math.max(reps.length, 1);
-    const step = compact ? 16 : 34;
-    const pad = compact ? 8 : 20;
-    const width = pad * 2 + step * (n - 1);
-    const top = 6, floor = compact ? 70 : 150, height = floor + (compact ? 8 : 34);
-    // 가장 깊은 반복이 바닥 근처에 오도록 눈금을 맞춘다. 여러 세트를 나란히 그릴 때는 opts.deepest로 같은 눈금을 쓴다
-    const deepest = opts.deepest || deepestOf(reps);
-    const y = depth => top + Math.max(0, Math.min(1, (1 - depth) / deepest)) * (floor - top);
-    const chart = svg('svg', { viewBox: '0 0 ' + Math.max(width, compact ? 150 : 320) + ' ' + height, class: 'repchart', role: 'img' });
-    chart.setAttribute('aria-label', '반복별 앉은 깊이' + (fadeFrom ? ', ' + fadeFrom + '회째부터 얕아짐' : ''));
+    const bar = compact ? 9 : 20, gap = compact ? 5 : 13, step = bar + gap;
+    const plot = compact ? 62 : 132, head = compact ? 4 : 20, foot = compact ? 2 : 24;
+    const content = Math.max(reps.length, 1) * step - gap;
+    const width = Math.max(content, compact ? 140 : 318);
+    const height = head + plot + foot;
+    const top = opts.top || topOf(reps);
+    const h = value => Math.max(bar, value / top * plot);   // 너무 낮아도 둥근 머리는 보이게
+    const chart = svg('svg', { viewBox: '0 0 ' + width + ' ' + height, class: 'repchart', role: 'img' });
+    chart.setAttribute('aria-label', '반복별 앉은 깊이' + (fadeFrom ? ', ' + fadeFrom + '회째부터 덜 앉음' : ''));
 
-    if (fadeFrom && !compact) {
-      const x0 = pad + step * (fadeFrom - 1) - step / 2;
-      chart.append(svg('rect', { x: x0, y: 0, width: pad + step * (n - 1) + step / 2 - x0, height: floor + 8, fill: '#D63A2F', opacity: .07 }));
-    }
-    chart.append(svg('line', { x1: 0, y1: top, x2: '100%', y2: top, stroke: '#1C1F1E', 'stroke-width': compact ? 1.5 : 2 }));
-    if (reps.length >= 2) {
-      const base = y((reps[0].depth + reps[1].depth) / 2);
-      chart.append(svg('line', { x1: 0, y1: base, x2: '100%', y2: base, stroke: '#D3D8D6', 'stroke-width': 1.5, 'stroke-dasharray': '4 4' }));
-    }
     reps.forEach((rep, i) => {
-      const x = pad + step * i;
-      const faded = fadeFrom && i + 1 >= fadeFrom;
-      const color = faded ? '#D63A2F' : '#1C1F1E';
-      const g = svg('g', { class: 'drop', style: 'animation-delay:' + (i * 35) + 'ms' });
-      g.append(svg('line', { x1: x, y1: top, x2: x, y2: y(rep.depth), stroke: color, 'stroke-width': compact ? 2 : 3 }),
-        svg('circle', { cx: x, cy: y(rep.depth), r: compact ? 3.5 : 7, fill: color }));
-      chart.append(g);
+      const x = i * step, value = sat(rep.depth), faded = fadeFrom && i + 1 >= fadeFrom;
+      chart.append(svg('rect', { x, y: head, width: bar, height: plot, rx: bar / 2, fill: TRACK }));
+      chart.append(svg('rect', { x, y: head + plot - h(value), width: bar, height: h(value), rx: bar / 2, fill: faded ? RED : BLUE,
+        class: 'grow', style: 'animation-delay:' + (i * 30) + 'ms' }));
       if (!compact) {
-        const label = svg('text', { x, y: height - 8, 'text-anchor': 'middle', 'font-size': 12, fill: faded ? '#D63A2F' : '#5E6664', 'font-family': 'inherit' });
-        label.textContent = i + 1;
-        chart.append(label);
+        chart.append(svg('text', { x: x + bar / 2, y: head + plot - h(value) - 5, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700,
+          fill: faded ? RED : SUB }, value));
+        chart.append(svg('text', { x: x + bar / 2, y: height - 6, 'text-anchor': 'middle', 'font-size': 12, fill: SUB }, i + 1));
       }
     });
+    if (reps.length >= 2) {
+      const base = head + plot - h((sat(reps[0].depth) + sat(reps[1].depth)) / 2);
+      chart.append(svg('line', { x1: 0, y1: base, x2: width, y2: base, stroke: '#1C1F1E', 'stroke-width': 1, 'stroke-dasharray': '3 4', opacity: .45 }));
+      if (!compact && content < width - 50) {
+        chart.append(svg('text', { x: width, y: base - 5, 'text-anchor': 'end', 'font-size': 11, fill: SUB }, '처음 깊이'));
+      }
+    }
     return chart;
   }
 
-  function deepestOf(reps) {
-    return Math.max(0.3, ...reps.map(r => 1 - r.depth)) * 1.1;
+  // 처음 깊이를 지킨 반복의 비율을 고리로 그린다
+  function ring(kept, total) {
+    const r = 30, c = 2 * Math.PI * r, share = total ? kept / total : 0;
+    const node = svg('svg', { viewBox: '0 0 76 76', class: 'ring', role: 'img' });
+    node.setAttribute('aria-label', total + '회 중 ' + kept + '회가 처음 깊이를 지킴');
+    node.append(svg('circle', { cx: 38, cy: 38, r, fill: 'none', stroke: TRACK, 'stroke-width': 9 }));
+    node.append(svg('circle', { cx: 38, cy: 38, r, fill: 'none', stroke: share >= 1 ? '#2F8F5B' : BLUE, 'stroke-width': 9, 'stroke-linecap': 'round',
+      'stroke-dasharray': (c * share) + ' ' + c, transform: 'rotate(-90 38 38)' }));
+    node.append(svg('text', { x: 38, y: 43, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 800, fill: '#1C1F1E' }, kept + '/' + total));
+    return node;
   }
 
   function when(iso) {
@@ -103,5 +123,14 @@ const MM = (() => {
     return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + day + '요일 ' + (d.getHours() < 12 ? '오전 ' : '오후 ') + (d.getHours() % 12 || 12) + '시';
   }
 
-  return { $, userKind, setUserKind, userId, api, el, finding, repChart, deepestOf, when };
+  // 측정 화면이 쓰는 관절 추적 모델(약 8MB)을 한가할 때 미리 받아 둔다. 측정 화면이 바로 뜬다
+  function warmMeasure() {
+    const later = window.requestIdleCallback || (fn => setTimeout(fn, 1500));
+    later(() => ['https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs',
+      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm/vision_wasm_internal.wasm',
+      'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task']
+      .forEach(href => { const link = document.createElement('link'); link.rel = 'prefetch'; link.href = href; link.crossOrigin = 'anonymous'; document.head.append(link); }));
+  }
+
+  return { $, userKind, setUserKind, userId, api, overview, cachedOverview, keepOverview, el, finding, repChart, topOf, ring, sat, when, warmMeasure };
 })();
