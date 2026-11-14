@@ -185,6 +185,31 @@ td, th { border-bottom: 1px solid var(--rule); padding: 8px 4px; text-align: rig
 th { color: var(--faint); }
 td:first-child, th:first-child, td:last-child, th:last-child { text-align: left; }
 
+/* 스플래시 (Figma 45:506). 375×812 기준 좌표를 그대로 옮겼다.
+   로고 묶음은 화면 높이의 36.8% 지점, 가로 중앙에서 4.93px 오른쪽에 놓인다 */
+.splash {
+  position: fixed; inset: 0; z-index: 100; overflow: hidden; cursor: pointer;
+  background: url('/assets/splash/overlay.svg') center / 100% 100% no-repeat,
+              url('/assets/splash/bg.svg') center / 100% 100% no-repeat, #10130D;
+  transition: opacity .4s ease;
+}
+.splash.out { opacity: 0; pointer-events: none; }
+.splash-logo {
+  position: absolute; top: 36.82%; left: calc(50% + 4.93px); transform: translateX(-50%);
+  width: 168.667px; height: 156px;
+}
+.splash-logo img { position: absolute; display: block; max-width: none; }
+.splash-logo .glow-outer { left: 0; top: 3.5px; }
+.splash-logo .glow-inner { left: 34px; top: 23.5px; }
+.splash-logo .wave { left: 7.95px; top: 4.62px; }
+.splash-logo .dots { left: 0; top: 0; }
+.splash-logo .word {
+  position: absolute; top: 91px; left: 82px; transform: translateX(-50%);
+  font-family: 'Jura', sans-serif; font-weight: 400; font-size: 55px; line-height: 65px; /* Figma 글자 박스 높이. normal로 두면 브라우저에서 12px쯤 아래로 내려간다 */
+  letter-spacing: -1.65px; color: #C6FF3D; white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) { .splash { transition: none; } }
+
 @media (prefers-reduced-motion: no-preference) {
   .repchart { animation: reveal .6s ease-out backwards; }
   @keyframes reveal { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }

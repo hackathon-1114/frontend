@@ -6,7 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=13">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura:wght@400&display=block&text=MOTIF">
+<link rel="stylesheet" href="/app.css?v=14">
 <style>
   .goals { list-style: none; padding: 0; margin: 10px 0 0; }
   .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
@@ -15,6 +18,31 @@
 </style>
 </head>
 <body>
+<!-- 스플래시 (Figma 45:506). 세션마다 처음 한 번만 보여 주고, 누르면 바로 닫힌다 -->
+<div class="splash" id="splash" role="img" aria-label="MOTIF">
+  <div class="splash-logo">
+    <img class="glow-outer" src="/assets/splash/glow-outer.svg" width="158" height="92" alt="">
+    <img class="glow-inner" src="/assets/splash/glow-inner.svg" width="90" height="52" alt="">
+    <img class="wave" src="/assets/splash/wave.svg" width="155.976" height="82.7122" alt="">
+    <img class="dots" src="/assets/splash/dots.svg" width="168.667" height="74.3455" alt="">
+    <span class="word">MOTIF</span>
+  </div>
+</div>
+<script>
+(() => {
+  const splash = document.getElementById('splash');
+  let seen = false;
+  try { seen = sessionStorage.getItem('mm.splash') === '1'; sessionStorage.setItem('mm.splash', '1'); } catch (e) {}
+  if (seen) { splash.remove(); return; }
+  const close = () => {
+    if (!splash.isConnected || splash.classList.contains('out')) return;
+    splash.classList.add('out');
+    setTimeout(() => splash.remove(), 400);
+  };
+  splash.addEventListener('click', close);
+  setTimeout(close, 1600);
+})();
+</script>
 <div class="wrap">
   <div class="top">
     <span class="brand">MOTIF</span>
