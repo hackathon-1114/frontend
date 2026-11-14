@@ -6,7 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jura:wght@400&display=block&text=MOTIF">
+<link rel="stylesheet" href="/app.css?v=17">
 <style>
   .goals { list-style: none; padding: 0; margin: 10px 0 0; }
   .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
@@ -257,7 +260,6 @@ function showInbody(r) {
   };
   const pair = (left, right) => left != null && right != null ? left + ' / ' + right + 'kg' : '정보 없음';
   view.append(statusSection('부위별 근육량', [['팔', pair(r.leftArmKg, r.rightArmKg)], ['다리', pair(r.leftLegKg, r.rightLegKg)], ['몸통', r.trunkKg != null ? r.trunkKg + 'kg' : '정보 없음']]));
-  view.append(statusSection('부위별 지방량', [['팔', '정보 없음'], ['다리', '정보 없음'], ['복부', '정보 없음']]));
   if (r.legDiffPct != null && r.weakerLeg) {
     view.append(el('p', (r.weakerLeg === 'left' ? '왼쪽' : '오른쪽') + ' 다리 근육량이 ' + r.legDiffPct + '% 적습니다. 실제 움직임에서도 차이가 나는지는 카메라로 확인합니다.'));
   }

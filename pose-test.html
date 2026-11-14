@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MOTIF 측정</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="/app.css?v=14">
+<link rel="stylesheet" href="/app.css?v=17">
 <style>
   .voice { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--sub); }
   .how { margin: 10px 0 0; padding-left: 18px; font-size: 14px; }
@@ -83,6 +83,7 @@
   <a href="/#result"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M5 15l4-4 3 3 6-7"/></svg>결과</a>
 </div></nav>
 
+<script>window.MM_API_BASE = 'https://hackathon-backend-production-967eabf5.up.railway.app';</script>
 <script src="/app.js?v=9"></script>
 <script type="module">
 import { PoseLandmarker, FilesetResolver, DrawingUtils }
@@ -439,9 +440,6 @@ try {
 } catch (e) {
   $('status').textContent = '추적 모델을 불러오지 못했습니다. 인터넷 연결을 확인하고 새로 고쳐 주세요.';
 }
-
-window.MM_API_BASE = 'https://hackathon-backend-production-967eabf5.up.railway.app';
-
 </script>
 </body>
 </html>
