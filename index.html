@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MUSCLE MAP</title>
+<link rel="stylesheet" href="/app.css">
+<style>
+  details { margin-top: 6px; }
+  details summary { font-size: 13px; color: var(--sub); cursor: pointer; }
+  details p { font-size: 14px; }
+  .goals { list-style: none; padding: 0; margin: 10px 0 0; }
+  .goals li { padding: 10px 0 10px 28px; border-top: 1px solid var(--rule); position: relative; font-size: 15px; }
+  .goals li::before { content: ''; position: absolute; left: 2px; top: 14px; width: 14px; height: 14px; border: 1.5px solid var(--ink); border-radius: 3px; }
+  .goals li:first-child { border-top: 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="brand">MUSCLE MAP</span>
+    <select id="user" aria-label="사용자">
+      <option value="example">예시 사용자</option>
+      <option value="new">새 사용자</option>
+    </select>
+  </div>
+
+  <!-- 홈: 쌓인 세트에서 보이는 것 -->
+  <div class="screen" id="home">
+    <div class="sheet">
+      <h1 id="homeHeadline">불러오는 중입니다</h1>
+      <p class="sub" id="homeSub"></p>
+      <div id="homeChart"></div>
+      <div class="legend" id="homeLegend" hidden>
+        <span><i></i>처음과 같은 깊이</span><span><i class="red"></i>얕아지거나 느려진 반복</span>
+      </div>
+      <a class="btn" href="/pose-test.html">새 세트 측정하기</a>
+    </div>
+    <div class="sheet" id="homeHistory" hidden>
+      <h2>최근 세트를 나란히 보면</h2>
+      <p class="sub">선이 짧을수록 덜 앉은 것입니다.</p>
+      <div class="multiples" id="multiples"></div>
+    </div>
+    <div class="sheet">
+      <h2>기록에서 찾은 패턴</h2>
+      <div id="insights"></div>
+      <button class="btn quiet" id="analyze" type="button">패턴 다시 찾기</button>
+      <div class="msg" id="patternMsg"></div>
+    </div>
+  </div>
+
+  <!-- 내 몸: 인바디, 문진, 확인할 영역 -->
+  <div class="screen" id="body">
+    <div class="sheet">
+      <h1>몸의 구성</h1>
+      <p class="sub">인바디는 근육이 어디에 얼마나 있는지를 알려 줍니다. 자세는 카메라로 따로 봅니다.</p>
+      <div id="inbodyView"></div>
+      <button class="btn quiet" id="sampleInbody" type="button">가상 인바디 데이터 넣기</button>
+      <div class="msg" id="inbodyMsg"></div>
+    </div>
+    <div class="sheet">
+      <h1>평소 몸을 쓰는 습관</h1>
+      <h3>하루에 앉아 있는 시간</h3>
+      <div class="chips" id="sitting" data-single>
+        <button type="button">2시간 미만</button><button type="button">2~4시간</button>
+        <button type="button">4~8시간</button><button type="button">8시간 이상</button>
+      </div>
+      <h3>불편함을 느끼는 부위</h3>
+      <div class="chips" id="parts">
+        <button type="button">어깨</button><button type="button">허리</button>
+        <button type="button">왼쪽 무릎</button><button type="button">오른쪽 무릎</button>
+        <button type="button">왼쪽 발목</button><button type="button">오른쪽 발목</button>
+      </div>
+      <label for="situation">어떤 때 불편한가요</label>
+      <input id="situation" type="text" maxlength="100" placeholder="계단을 내려갈 때">
+      <h3>해당하는 습관</h3>
+      <div class="chips" id="habits">
+        <button type="button">다리를 자주 꼰다</button><button type="button">한쪽 다리에 체중을 싣는다</button>
+        <button type="button">한쪽으로 가방을 멘다</button><button type="button">해당 없음</button>
+      </div>
+      <div class="two">
+        <div><label for="weekly">주당 운동 횟수</label><input id="weekly" type="number" min="0" max="21" placeholder="3"></div>
+        <div><label for="goalText">운동 목표</label><input id="goalText" type="text" maxlength="100" placeholder="하체 근력 강화"></div>
+      </div>
+      <button class="btn" id="saveSurvey" type="button">저장하고 확인할 영역 보기</button>
+      <div class="msg" id="surveyMsg"></div>
+    </div>
+    <div class="sheet" id="alertSheet">
+      <h1>카메라로 확인하면 좋을 영역</h1>
+      <p class="sub">인바디와 습관을 함께 본 사전 분석입니다. 아직 움직임을 재지 않았으므로 결론이 아니라 확인할 항목입니다.</p>
+      <div id="alertView"></div>
+      <div class="msg" id="alertMsg"></div>
+      <a class="btn" href="/pose-test.html">카메라로 확인하기</a>
+    </div>
+  </div>
+
+  <!-- 결과: 가장 최근 세트 -->
+  <div class="screen" id="result">
+    <div class="sheet">
+      <p class="sub" id="resultWhen"></p>
+      <h1 id="resultHeadline">불러오는 중입니다</h1>
+      <div id="resultChart"></div>
+      <div class="figures" id="resultFigures"></div>
+      <p class="note" id="resultNote"></p>
+    </div>
+    <div class="sheet" id="analysisSheet" hidden>
+      <h2>이번 세트에서 보인 것</h2>
+      <div id="observations"></div>
+      <div class="msg" id="resultMsg"></div>
+    </div>
+    <div class="sheet" id="exerciseSheet" hidden>
+      <h2>이렇게 보완해 보세요</h2>
+      <div id="exercises"></div>
+    </div>
+    <div class="sheet" id="goalSheet" hidden>
+      <h2>다음 측정에서 확인할 것</h2>
+      <ul class="goals" id="goals"></ul>
+      <a class="btn" href="/pose-test.html">다시 측정하기</a>
+    </div>
+  </div>
+</div>
+
+<nav class="tabs" aria-label="화면 이동"><div>
+  <a href="#home" data-tab="home">홈</a>
+  <a href="#body" data-tab="body">내 몸</a>
+  <a href="/pose-test.html">측정</a>
+  <a href="#result" data-tab="result">결과</a>
+</div></nav>
+
+<script src="/app.js"></script>
+<script>
+const { $, api, el, finding, repChart, when } = MM;
+
+// 고르는 버튼 묶음. data-single이 있으면 하나만 고른다
+document.querySelectorAll('.chips').forEach(group => group.addEventListener('click', e => {
+  if (e.target.tagName !== 'BUTTON') return;
+  if (group.hasAttribute('data-single')) group.querySelectorAll('button').forEach(b => { if (b !== e.target) b.classList.remove('on'); });
+  e.target.classList.toggle('on');
+}));
+const picked = id => [...$(id).querySelectorAll('button.on')].map(b => b.textContent);
+const pick = (id, values) => $(id).querySelectorAll('button').forEach(b => b.classList.toggle('on', values.includes(b.textContent)));
+
+function headline(stats) {
+  if (stats.fadeFromRep) return stats.fadeFromRep + '회째부터 덜 앉기 시작했습니다';
+  return stats.repCount + '회 모두 같은 깊이로 앉았습니다';
+}
+
+// ── 홈 ────────────────────────────────────────────────────────────────────────────
+function showInsights(items) {
+  const box = $('insights');
+  box.replaceChildren();
+  if (!items.length) { box.append(el('p', '세트가 쌓이면 여기에서 반복되는 패턴을 찾아 드립니다.', 'sub')); return; }
+  items.forEach(p => {
+    const row = finding('blue', p.title, null, [p.suggestion]);
+    const more = el('details');
+    more.append(el('summary', '근거 보기'), el('p', p.evidence));
+    row.lastChild.append(more);
+    box.append(row);
+  });
+}
+
+async function loadHome() {
+  $('patternMsg').textContent = '';
+  try {
+    const sets = await api('GET', '/api/sets');
+    $('homeLegend').hidden = !sets.length;
+    $('homeHistory').hidden = sets.length < 2;
+    if (!sets.length) {
+      $('homeHeadline').textContent = '첫 세트를 측정해 보세요';
+      $('homeSub').textContent = '카메라 앞에서 스쿼트를 하면 반복이 쌓일 때 깊이와 속도가 어떻게 달라지는지 보여 드립니다.';
+      $('homeChart').replaceChildren();
+    } else {
+      const latest = sets[0];
+      $('homeHeadline').textContent = headline(latest.stats);
+      $('homeSub').textContent = when(latest.performedAt) + ' ' + latest.exercise + ' ' + latest.stats.repCount + '회';
+      $('homeChart').replaceChildren(repChart(latest.reps, latest.stats.fadeFromRep));
+      const recent = sets.slice(0, 3).reverse();
+      const deepest = MM.deepestOf(recent.flatMap(s => s.reps));
+      $('multiples').replaceChildren(...recent.map(s => {
+        const fig = el('figure');
+        const cap = el('figcaption');
+        cap.append(el('b', s.stats.fadeFromRep ? s.stats.fadeFromRep + '회째부터' : '끝까지 일정'), document.createTextNode(when(s.performedAt)));
+        fig.append(repChart(s.reps, s.stats.fadeFromRep, { compact: true, deepest }), cap);
+        return fig;
+      }));
+    }
+    showInsights(await api('GET', '/api/insights'));
+  } catch (e) { $('patternMsg').textContent = e.message; }
+}
+
+$('analyze').addEventListener('click', async () => {
+  $('analyze').disabled = true;
+  $('patternMsg').textContent = '기록을 살펴보는 중입니다. 10초쯤 걸립니다.';
+  try { showInsights(await api('POST', '/api/insights/analyze')); $('patternMsg').textContent = ''; }
+  catch (e) { $('patternMsg').textContent = e.message; }
+  finally { $('analyze').disabled = false; }
+});
+
+// ── 내 몸 ─────────────────────────────────────────────────────────────────────────
+function mirrorRow(name, left, right) {
+  const max = Math.max(left || 0, right || 0) || 1;
+  const wrap = el('div');
+  const row = el('div', null, 'mirror-row');
+  const bar = (value, side, low) => { const b = el('div', null, 'mirror-bar ' + side + (low ? ' low' : '')); const fill = el('i'); fill.style.width = Math.round((value || 0) / max * 100) + '%'; b.append(fill); return b; };
+  const gap = Math.abs((left || 0) - (right || 0)) / max;   // 5% 넘게 차이 날 때만 적은 쪽을 빨강으로
+  row.append(bar(left, 'left', gap >= 0.05 && left < right), el('span', name, 'name'), bar(right, 'right', gap >= 0.05 && right < left));
+  const vals = el('div', null, 'mirror-vals');
+  vals.append(el('span', '왼쪽 ' + (left ?? '-') + 'kg'), el('span', '오른쪽 ' + (right ?? '-') + 'kg'));
+  wrap.append(row, vals);
+  return wrap;
+}
+
+function showInbody(r) {
+  const view = $('inbodyView');
+  view.replaceChildren();
+  if (!r) { view.append(el('p', '아직 인바디 기록이 없습니다. 결과지가 없으면 가상 데이터로 흐름을 볼 수 있습니다.', 'sub')); return; }
+  const figures = el('div', null, 'figures');
+  [['체중', r.weightKg, 'kg'], ['골격근량', r.skeletalMuscleKg, 'kg'], ['체지방률', r.bodyFatPercent, '%'], ['BMI', r.bmi, '']].forEach(([k, v, unit]) => {
+    const f = el('div', null, 'figure'); const b = el('b', v == null ? '-' : String(v)); if (unit) b.append(el('span', unit)); f.append(el('small', k), b); figures.append(f);
+  });
+  const mirror = el('div', null, 'mirror');
+  mirror.append(mirrorRow('다리', r.leftLegKg, r.rightLegKg), mirrorRow('팔', r.leftArmKg, r.rightArmKg));
+  view.append(figures, mirror);
+  if (r.legDiffPct != null && r.weakerLeg) {
+    view.append(el('p', (r.weakerLeg === 'left' ? '왼쪽' : '오른쪽') + ' 다리 근육량이 ' + r.legDiffPct + '% 적습니다. 실제 움직임에서도 차이가 나는지는 카메라로 확인합니다.'));
+  }
+  if (r.source === 'sample') view.append(el('p', '시연을 위한 가상 데이터입니다.', 'note'));
+}
+
+function showAlert(a) {
+  const colors = { '추가 확인 권장': 'red', '측정 필요': 'yellow', '참고': 'blue' };
+  $('alertView').replaceChildren(...a.areas.map(area => {
+    const row = finding(colors[area.status] || 'blue', area.title, area.side + ' ' + area.bodyPart + ', ' + area.status, [], area.checkPatterns);
+    const more = el('details');
+    more.append(el('summary', '왜 이 영역인가요'), el('p', area.reason));
+    row.lastChild.append(more);
+    return row;
+  }));
+}
+
+async function loadBody() {
+  ['inbodyMsg', 'surveyMsg', 'alertMsg'].forEach(id => { $(id).textContent = ''; });
+  ['sitting', 'parts', 'habits'].forEach(id => pick(id, []));
+  ['situation', 'weekly', 'goalText'].forEach(id => { $(id).value = ''; });
+  $('alertView').replaceChildren();
+  try { showInbody((await api('GET', '/api/inbody'))[0]); } catch (e) { $('inbodyMsg').textContent = e.message; }
+  try {
+    const s = await api('GET', '/api/surveys/latest');
+    pick('sitting', [s.sittingHours]); pick('habits', s.bodyHabits); pick('parts', s.discomforts.map(d => d.bodyPart));
+    $('situation').value = (s.discomforts[0] && s.discomforts[0].situation) || '';
+    $('weekly').value = s.weeklyWorkouts ?? ''; $('goalText').value = s.goal || '';
+  } catch (e) { if (e.code !== 'SURVEY404') $('surveyMsg').textContent = e.message; }
+  try { showAlert(await api('GET', '/api/body-alerts/latest')); }
+  catch (e) { if (e.code === 'BODYALERT404') $('alertView').append(el('p', '습관을 저장하면 확인할 영역을 골라 드립니다.', 'sub')); else $('alertMsg').textContent = e.message; }
+}
+
+$('sampleInbody').addEventListener('click', async () => {
+  try { showInbody(await api('POST', '/api/inbody', { sample: true })); } catch (e) { $('inbodyMsg').textContent = e.message; }
+});
+
+$('saveSurvey').addEventListener('click', async () => {
+  const situation = $('situation').value || null;
+  $('saveSurvey').disabled = true;
+  try {
+    await api('POST', '/api/surveys', {
+      goal: $('goalText').value || null, sittingHours: picked('sitting')[0] || null,
+      weeklyWorkouts: $('weekly').value === '' ? null : Number($('weekly').value),
+      bodyHabits: picked('habits').filter(h => h !== '해당 없음'),
+      discomforts: picked('parts').map(bodyPart => ({ bodyPart, situation })),
+    });
+    $('surveyMsg').textContent = '저장했습니다. 확인할 영역을 고르는 중입니다. 10초쯤 걸립니다.';
+    showAlert(await api('POST', '/api/body-alerts/analyze'));
+    $('surveyMsg').textContent = '';
+    $('alertSheet').scrollIntoView({ behavior: 'smooth' });
+  } catch (e) { $('surveyMsg').textContent = e.message; }
+  finally { $('saveSurvey').disabled = false; }
+});
+
+// ── 결과 ──────────────────────────────────────────────────────────────────────────
+function figure(label, value, unit) {
+  const f = el('div', null, 'figure'); const b = el('b', value); if (unit) b.append(el('span', unit)); f.append(el('small', label), b); return f;
+}
+const signed = v => (v > 0 ? '+' : '') + v;
+
+function showSet(set) {
+  const st = set.stats, f = set.feedback;
+  $('resultWhen').textContent = when(set.performedAt) + ' ' + set.exercise + ' ' + st.repCount + '회';
+  $('resultHeadline').textContent = (f && f.headline) || headline(st);
+  $('resultChart').replaceChildren(repChart(set.reps, st.fadeFromRep));
+  $('resultFigures').replaceChildren(
+    figure('평균 깊이', String(Math.round(st.avgDepth * 100)), '%'),
+    figure('후반 깊이', signed(Math.round(st.depthChange * 100)), '%p'),
+    figure('후반 속도', signed(Math.round(st.tempoChangePct)), '%'),
+    figure('후반 상체 기울기', signed(Math.round(st.leanChange)), '도'));
+  $('resultNote').textContent = '깊이는 서 있을 때를 100%로 본 엉덩이 높이입니다. 낮을수록 깊이 앉은 것입니다.'
+    + (set.emg && set.emg.simulated ? ' 근육 활성 값은 센서가 없어 시뮬레이션이며 판단에 쓰지 않았습니다.' : '');
+
+  $('analysisSheet').hidden = false;
+  const obs = $('observations');
+  obs.replaceChildren();
+  if (!f) {
+    obs.append(el('p', '수치를 풀어서 설명해 드립니다. 15초쯤 걸립니다.', 'sub'));
+    const btn = el('button', '설명 받기', 'btn quiet');
+    btn.type = 'button';
+    btn.addEventListener('click', async () => {
+      btn.disabled = true; $('resultMsg').textContent = '';
+      try { showSet(await api('POST', '/api/sets/' + set.id + '/feedback')); } catch (e) { $('resultMsg').textContent = e.message; btn.disabled = false; }
+    });
+    obs.append(btn);
+    $('exerciseSheet').hidden = true; $('goalSheet').hidden = true;
+    return;
+  }
+  obs.append(el('p', f.summary));
+  f.observations.forEach(o => {
+    const row = finding(o.possibleLoad ? 'red' : '', o.title, null, [o.possibleLoad]);
+    const more = el('details');
+    more.append(el('summary', '근거 보기'), el('p', o.evidence));
+    row.lastChild.append(more);
+    obs.append(row);
+  });
+  const exercises = f.exercises || [], goals = f.retestGoals || [];
+  $('exerciseSheet').hidden = !exercises.length;
+  $('exercises').replaceChildren(...exercises.map(x => {
+    const row = finding('blue', x.name, null, [x.how]);
+    const more = el('details');
+    more.append(el('summary', '왜 이 운동인가요'), el('p', x.reason));
+    row.lastChild.append(more);
+    return row;
+  }));
+  $('goalSheet').hidden = !goals.length;
+  $('goals').replaceChildren(...goals.map(g => el('li', g)));
+}
+
+async function loadResult() {
+  $('resultMsg').textContent = '';
+  try {
+    const sets = await api('GET', '/api/sets');
+    if (sets.length) { showSet(sets[0]); return; }
+    $('resultWhen').textContent = '';
+    $('resultHeadline').textContent = '아직 측정한 세트가 없습니다';
+    $('resultChart').replaceChildren(); $('resultFigures').replaceChildren();
+    $('resultNote').textContent = '아래 측정에서 스쿼트 한 세트를 저장하면 여기에 결과가 나옵니다.';
+    ['analysisSheet', 'exerciseSheet', 'goalSheet'].forEach(id => { $(id).hidden = true; });
+  } catch (e) { $('resultHeadline').textContent = e.message; }
+}
+
+// ── 화면 전환 ─────────────────────────────────────────────────────────────────────
+const loaders = { home: loadHome, body: loadBody, result: loadResult };
+function show() {
+  const tab = loaders[location.hash.slice(1)] ? location.hash.slice(1) : 'home';
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('on', s.id === tab));
+  document.querySelectorAll('.tabs a').forEach(a => a.classList.toggle('on', a.dataset.tab === tab));
+  window.scrollTo(0, 0);
+  loaders[tab]();
+}
+window.addEventListener('hashchange', show);
+$('user').value = MM.userKind();
+$('user').addEventListener('change', () => { MM.setUserKind($('user').value); show(); });
+show();
+</script>
+</body>
+</html>
